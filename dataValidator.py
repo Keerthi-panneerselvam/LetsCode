@@ -48,7 +48,7 @@ def validateFileAttributes(data, appCode):
 def validateAttributes(appCode, key, value):
     match key:
          case "date":
-            valid = validateDate(value)
+            valid = validateDate(str(value))
          case "app_code":
              valid = validateAppCode(value, appCode)
          case "name":
@@ -59,8 +59,8 @@ def validateAttributes(appCode, key, value):
                 
 def validateDate(date):
     try:
-        datetime.strptime(str(date), '%Y%m%d')
-        return True
+        valid = datetime.strptime(str(date), '%Y%m%d') or datetime.strptime(str(date), '%Y-%m-%d') or datetime.strptime(str(date), '%Y/%m/%d')
+        return valid
     except ValueError:
         return False
     
