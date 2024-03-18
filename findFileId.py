@@ -11,7 +11,10 @@ import re
 # ]
 
 # JSON dump
-json_input_dump = '{"path": "/external/datasource/nca/cobt_cn_20240229.csv", "action": "upload"}'
+# json_input_dump = '{"path": "/external/datasource/nca/cobt_cn_20240229.csv", "action": "upload"}'
+# json_input_dump = '{"path": "/external/datasource/mot_ilms/ilms_20240229.csv", "action": "upload"}'
+# json_input_dump = '{"path": "/external/datasource/mot_ds_ap/ds_ap_20240229.csv", "action": "upload"}'
+json_input_dump = '{"path": "/external/datasource/nca/cobt_ae_20240229.csv", "action": "upload"}'
 
 # Convert JSON dump to Python dictionary
 json_input = json.loads(json_input_dump)
@@ -29,17 +32,22 @@ df = pd.DataFrame(data)
 def extract_filename(path):
     return re.search(r'([^/]+)_\d{8}\.csv', path).group(1)
 
+# Function to extract file name before date from path
+def extract_folder_name(path):
+    return path.split('/')[-2]
+
 # Function to find corresponding file_id
-def find_file_id(path, master_df):
+def find_file_id_folder_name(path, master_df):
+    folder_name = extract_folder_name(path)
     filename = extract_filename(path)
     row = master_df[master_df['app_code'] == filename]
     if not row.empty:
-        return row
+        return row, folder_name
     else:
-        return None
+        return None, None
 
 # Extracting file_ids
 if  json_input['action'].lower() == 'upload':
-    master_input = find_file_id(json_input['path'], master_df=df)
+    master_input = find_file_id_folder_name(json_input['path'], master_df=df)
     if master_input is not None:
-        print(master_input, type(master_input))
+        print(master_input)
